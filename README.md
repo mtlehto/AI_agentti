@@ -1,10 +1,10 @@
-# Ultimate Agent Enterprise
+# AI agentti
 
 Python-projekti, joka kokoaa Outlookin, kalenterin, tehtävät ja liikennetiedot aamubriiffiksi.
 
 ## Käyttö
 
-1. Kopioi ympäristömuuttujat tiedostosta `.env.template` tiedostoon `.env`.
+1. Kopioi ympäristömuuttujat tiedostosta `.env.example` tiedostoon `.env`.
 2. Asenna riippuvuudet `pip install -r requirements.txt`.
 3. Käynnistä API komennolla `uvicorn agent.api:app --host 0.0.0.0 --port 8000`.
 

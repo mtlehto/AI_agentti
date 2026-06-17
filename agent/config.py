@@ -6,6 +6,9 @@ CLIENT_ID=os.getenv("CLIENT_ID")
 CLIENT_SECRET=os.getenv("CLIENT_SECRET")
 USER_ID=os.getenv("USER_ID")
 ORS_KEY=os.getenv("ORS_KEY")
+PUSHOVER_APP_TOKEN=os.getenv("PUSHOVER_APP_TOKEN")
+PUSHOVER_USER_KEY=os.getenv("PUSHOVER_USER_KEY")
+PUSHOVER_SOUND=os.getenv("PUSHOVER_SOUND")
 
 
 def _float_env(name, default):

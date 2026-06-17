@@ -17,7 +17,13 @@ Paras tapa käyttää tätä iPhonessa on Apple Shortcuts:
 3. Lisää toiminto `Show Result` tai `Speak Text`, jotta saat briiffin puhelimeen.
 4. Tee erillinen Siri-shortcut, joka kutsuu samaa URL:ia, jolloin voit sanoa esimerkiksi “Hei Siri, aamubriiffi”.
 
-Jos haluat varsinaisen push-ilmoituksen ilman Shortcutsia, tarvitaan erillinen push-kanava kuten Pushover, Telegram tai oma iOS-sovellus.
+Jos haluat oikean push-ilmoituksen iPhoneen, käytä Pushoveria:
+
+1. Asenna Pushover iPhoneen.
+2. Luo Pushover-sovellus ja kopioi App Token.
+3. Kopioi henkilökohtainen User Key.
+4. Lisää arvot `.env`-tiedostoon muuttujina `PUSHOVER_APP_TOKEN` ja `PUSHOVER_USER_KEY`.
+5. Kun kutsut `/morning`, sama briiffi lähtee myös push-viestinä puhelimeen.
 
 ## Huomio
 

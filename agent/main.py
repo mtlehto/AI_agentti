@@ -7,6 +7,7 @@ from agent.traffic import get_transit_delay,get_traffic_level
 from agent.ai import smart_decision
 from agent.tts import speak
 from agent.teams import send
+from agent.push import send_push
 
 
 def build_brief(persona="arska"):
@@ -44,5 +45,6 @@ def run_agent(persona="arska", deliver=True):
     if deliver:
         speak(decision)
         send(get_token(), decision)
+        send_push(decision)
 
     return brief

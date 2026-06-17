@@ -6,5 +6,17 @@ CLIENT_ID=os.getenv("CLIENT_ID")
 CLIENT_SECRET=os.getenv("CLIENT_SECRET")
 USER_ID=os.getenv("USER_ID")
 ORS_KEY=os.getenv("ORS_KEY")
-HOME=(float(os.getenv("HOME_LAT")),float(os.getenv("HOME_LON")))
-WORK=(float(os.getenv("WORK_LAT")),float(os.getenv("WORK_LON")))
+
+
+def _float_env(name, default):
+	value = os.getenv(name)
+	if value in (None, ""):
+		return default
+	try:
+		return float(value)
+	except ValueError:
+		return default
+
+
+HOME = (_float_env("HOME_LAT", 60.20), _float_env("HOME_LON", 24.65))
+WORK = (_float_env("WORK_LAT", 60.17), _float_env("WORK_LON", 24.94))

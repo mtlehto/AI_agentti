@@ -9,7 +9,7 @@ from agent.tts import speak
 from agent.teams import send
 
 
-def run_agent(persona="arska"):
+def build_brief(persona="arska"):
     t=get_token()
     e=get_emails(t)
     c=get_calendar(t)
@@ -24,7 +24,25 @@ def run_agent(persona="arska"):
 
     decision=smart_decision(data,persona)
 
-    speak(decision)
-    send(t,decision)
+    return {
+        "persona": persona,
+        "emails": e,
+        "calendar": c,
+        "tasks": tasks,
+        "public_time": pub,
+        "car_time": car,
+        "transit_delay": delay,
+        "traffic_level": traffic,
+        "text": decision,
+    }
 
-    return decision
+
+def run_agent(persona="arska", deliver=True):
+    brief = build_brief(persona)
+    decision = brief["text"]
+
+    if deliver:
+        speak(decision)
+        send(get_token(), decision)
+
+    return brief

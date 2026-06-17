@@ -1,0 +1,10 @@
+version: "3"
+services:
+  agent:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - ./output:/app/output
+    ports:
+      - "8000:8000"

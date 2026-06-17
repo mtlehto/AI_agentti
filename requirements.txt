@@ -1,0 +1,7 @@
+requests
+msal
+python-dotenv
+fastapi
+uvicorn
+gtts
+schedule

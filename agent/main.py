@@ -10,25 +10,32 @@ from agent.teams import send
 from agent.push import send_push
 
 
-def build_brief(persona="arska"):
-    t=get_token()
-    e=get_emails(t)
-    c=get_calendar(t)
-    tasks=get_tasks(t)
+def build_brief(persona="arska", token=None):
+    if token is None:
+        token = get_token()
 
-    pub=get_public_time()
-    car=get_car_time()
-    delay=get_transit_delay()
-    traffic=get_traffic_level(car)
+    emails = get_emails(token) if token else []
+    calendar = get_calendar(token) if token else []
+    tasks = get_tasks(token) if token else []
 
-    data=f"emails:{e} calendar:{c} tasks:{tasks} public:{pub} car:{car} delay:{delay} traffic:{traffic}"
+    pub = get_public_time()
+    car = get_car_time()
+    delay = get_transit_delay()
+    traffic = get_traffic_level(car)
 
-    decision=smart_decision(data,persona)
+    data = (
+        f"emails:{' | '.join(emails)} "
+        f"calendar:{' | '.join(calendar)} "
+        f"tasks:{' | '.join(tasks)} "
+        f"public:{pub} car:{car} delay:{delay} traffic:{traffic}"
+    )
 
-    return {
+    decision = smart_decision(data, persona)
+
+    brief = {
         "persona": persona,
-        "emails": e,
-        "calendar": c,
+        "emails": emails,
+        "calendar": calendar,
         "tasks": tasks,
         "public_time": pub,
         "car_time": car,
@@ -37,14 +44,23 @@ def build_brief(persona="arska"):
         "text": decision,
     }
 
+    if not token:
+        brief["warning"] = "Graph token unavailable; email, calendar and task data may be missing."
+
+    return brief
+
 
 def run_agent(persona="arska", deliver=True):
-    brief = build_brief(persona)
+    token = get_token()
+    brief = build_brief(persona, token)
     decision = brief["text"]
 
     if deliver:
         speak(decision)
-        send(get_token(), decision)
+        if token:
+            send(token, decision)
+        else:
+            print("Warning: Teams delivery skipped because Graph token is unavailable.")
         send_push(decision)
 
     return brief

@@ -1,0 +1,44 @@
+trigger:
+  branches:
+    include:
+      - main
+
+variables:
+  pythonVersion: '3.11'
+  imageName: 'ai-agentti'
+  acrName: '$(ACR_NAME)'
+  resourceGroup: '$(AZURE_RESOURCE_GROUP)'
+  webAppName: '$(WEBAPP_NAME)'
+
+stages:
+- stage: BuildAndDeploy
+  displayName: Build and deploy container
+  jobs:
+  - job: Build
+    displayName: Build and push Docker image
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '$(pythonVersion)'
+        addToPath: true
+
+    - checkout: self
+
+    - script: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+      displayName: Install dependencies
+
+    - task: AzureCLI@2
+      inputs:
+        azureSubscription: '$(AZURE_SERVICE_CONNECTION)'
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          az acr build --registry $(acrName) --image $(imageName):$(Build.BuildId) .
+          az webapp config container set --name $(webAppName) --resource-group $(resourceGroup) \
+            --docker-custom-image-name $(acrName).azurecr.io/$(imageName):$(Build.BuildId)
+          echo "Deployed image: $(acrName).azurecr.io/$(imageName):$(Build.BuildId)"
+      displayName: Build image and deploy to App Service

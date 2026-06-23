@@ -1,0 +1,17 @@
+version: '3.9'
+services:
+  agent:
+    image: <ACR_NAME>.azurecr.io/ai-agentti:latest
+    ports:
+      - '8000:8000'
+    environment:
+      - TENANT_ID=${TENANT_ID}
+      - CLIENT_ID=${CLIENT_ID}
+      - CLIENT_SECRET=${CLIENT_SECRET}
+      - USER_ID=${USER_ID}
+      - ORS_KEY=${ORS_KEY}
+      - PUSHOVER_APP_TOKEN=${PUSHOVER_APP_TOKEN}
+      - PUSHOVER_USER_KEY=${PUSHOVER_USER_KEY}
+      - TEAMS_WEBHOOK_URL=${TEAMS_WEBHOOK_URL}
+    volumes:
+      - ./output:/app/output

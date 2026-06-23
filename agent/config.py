@@ -9,6 +9,7 @@ ORS_KEY=os.getenv("ORS_KEY")
 PUSHOVER_APP_TOKEN=os.getenv("PUSHOVER_APP_TOKEN")
 PUSHOVER_USER_KEY=os.getenv("PUSHOVER_USER_KEY")
 PUSHOVER_SOUND=os.getenv("PUSHOVER_SOUND")
+TEAMS_WEBHOOK_URL=os.getenv("TEAMS_WEBHOOK_URL")
 
 
 def _float_env(name, default):

@@ -127,6 +127,10 @@ def user_path(resource):
 
 Persist the MSAL token cache to a local file so device flow doesn't prompt every run. For production or multi-user deployments, use proper delegated consent flows or service principals as appropriate.
 
+Token cache location
+
+The delegated device-code flow persists tokens to a local file named `.msal_token_cache` at the repository root. This allows `get_token()` to acquire tokens silently on subsequent runs. To force a new sign-in, remove that file.
+
 
 ## (Valinnainen) Azure-käyttöönotto
 

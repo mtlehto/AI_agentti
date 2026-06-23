@@ -11,17 +11,23 @@ def _load_cache():
     cache = msal.SerializableTokenCache()
     if _CACHE_FILE.exists():
         try:
-            cache.deserialize(_CACHE_FILE.read_bytes())
-        except Exception:
-            pass
+            data = _CACHE_FILE.read_bytes()
+            if data:
+                cache.deserialize(data)
+        except Exception as e:
+            print("Warning: failed to load MSAL cache:", e)
     return cache
 
 
 def _save_cache(cache):
     try:
-        _CACHE_FILE.write_bytes(cache.serialize())
-    except Exception:
-        pass
+        data = cache.serialize()
+        # atomic write
+        tmp = _CACHE_FILE.with_suffix(".tmp")
+        tmp.write_bytes(data)
+        tmp.replace(_CACHE_FILE)
+    except Exception as e:
+        print("Warning: failed to save MSAL cache:", e)
 
 
 def get_token():
@@ -42,23 +48,41 @@ def get_token():
         return t.get("access_token")
 
     # Delegated flow (user) with device code and cache
-    scopes = ["Mail.Read", "Calendars.Read", "Tasks.Read"]
+    scopes = ["Mail.Read", "Calendars.Read", "Tasks.Read", "offline_access"]
     cache = _load_cache()
-    app = msal.PublicClientApplication(CLIENT_ID, authority=f"https://login.microsoftonline.com/{TENANT_ID or 'common'}", token_cache=cache)
+    app = msal.PublicClientApplication(
+        CLIENT_ID,
+        authority=f"https://login.microsoftonline.com/{TENANT_ID or 'common'}",
+        token_cache=cache,
+    )
 
+    # Try silent acquisition first (uses refresh token if available)
     accounts = app.get_accounts()
     if accounts:
-        result = app.acquire_token_silent(scopes, account=accounts[0])
-        if result and "access_token" in result:
-            _save_cache(cache)
-            return result.get("access_token")
+        try:
+            result = app.acquire_token_silent(scopes, account=accounts[0])
+            if result and "access_token" in result:
+                _save_cache(cache)
+                return result.get("access_token")
+        except Exception as e:
+            print("Info: acquire_token_silent failed:", e)
 
-    # Start device code flow
-    flow = app.initiate_device_flow(scopes=scopes)
+    # Start device code flow if silent failed
+    try:
+        flow = app.initiate_device_flow(scopes=scopes)
+    except Exception as e:
+        print("Error initiating device flow:", e)
+        return None
+
     if "user_code" not in flow:
         return None
     print(flow.get("message"))
-    result = app.acquire_token_by_device_flow(flow)
+    try:
+        result = app.acquire_token_by_device_flow(flow)
+    except Exception as e:
+        print("Error during device flow:", e)
+        return None
+
     if result and "access_token" in result:
         _save_cache(cache)
         return result.get("access_token")
